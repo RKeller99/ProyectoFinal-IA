@@ -1,6 +1,9 @@
 from numpy.lib.shape_base import column_stack
+
 import streamlit as st
 
+
+#1. Importar bibliotecas
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -14,39 +17,40 @@ def programa():
     ##colorSecundarioFondo = "#F8F0DF"
     ##colorPrimario = '#79B4B7'
     
-    st.title("Reglas de Asociación")
+    st.header("Reglas de Asociación")
 
+
+#2. Importar los datos desde un archivo .xlsx o .csv
     archivo = st.file_uploader("Seleccione el archivo", type = ['xlsx','csv'])
+
+    #Los datos cuentan o no con encabezado
+    physics=st.checkbox('Seleccionar si el encabezado forma parte de los datos')
+    if physics == True:
+        header_val = None
+    else:
+        header_val = 0
+
+    #Cuando se seleccionó un archivo
     if archivo != None:
-        st.write("Archivo: " + "*"+archivo.name+archivo.type+"*")
+        DataFrameArchivo = pd.read_csv(archivo, error_bad_lines=False, header=header_val)
+        #Muestra los datos
+        st.subheader("Tabla de datos")
+        with st.expander("Desplegar tabla de datos"):
+            colum = st.slider("¿Cuántas columnas de datos deseas observar?", min_value=1, max_value=len(DataFrameArchivo))
+            st.write(DataFrameArchivo.head(colum))
 
-        DataFrameArchivo = pd.read_csv(archivo, error_bad_lines=False)
-
-        st.write(DataFrameArchivo)
-
-
-
-        Transacciones = DataFrameArchivo.values.reshape(-1).tolist()
-        
-
+#3. Procesamiento de Datos/Exploración de los Items
+        Transacciones = DataFrameArchivo.values.reshape(-1).tolist() #Pasamos todos los datos a una lista
         Lista = pd.DataFrame(Transacciones)
-        Lista['Frecuencia'] = 1  # valor que después se reemplazará, es nada más para agregar la columna. 
-        Lista = Lista.groupby(by=[0], as_index=False).count().sort_values(by=['Frecuencia'], ascending=True)
-        Lista['Porcentaje'] = (Lista['Frecuencia']/Lista['Frecuencia'].sum())
+        Lista['Frecuencia'] = 1  # Valor que después se reemplazará, es nada más para agregar la columna. 
+        Lista = Lista.groupby(by=[0], as_index=False).count().sort_values(by=['Frecuencia'], ascending=False)
+        Lista['Porcentaje [%]'] = (Lista['Frecuencia']/Lista['Frecuencia'].sum()*100)
         Lista = Lista.rename(columns={0:'Item'})
+
+        st.subheader("Tabla de frecuencia de datos")
         st.write(Lista)
 
-
-        
-
-
-
-
-
-
-
-
-
+        #Gráfica de frecuencia de datos
         fig = plt.figure(figsize=(16,16), dpi = 300)
         plt.ylabel('Item')
         plt.xlabel('Frecuencia')
@@ -54,27 +58,32 @@ def programa():
         ax = plt.axes()
         #ax.set(facecolor = colorSecundarioFondo)
         plt.barh(Lista['Item'], width=Lista['Frecuencia']) #, color=colorPrimario
+
+        st.subheader("Generación de gráfica de frecuencia de datos")
         st.pyplot(fig)
 
 
+#4. Aplicación del algoritmo
+        #Selección de parámetros
+        st.subheader("Aplicación del Algoritmo")
         col1, col2, col3 = st.columns(3)
-        soporte = col1.text_input("Soporte", 0.02)
-        confianza = col2.text_input("Confianza", 0.02)
-        elevacion = col3.text_input("Elevación", 1.2)
+        soporte = col1.text_input("Soporte", 0.01)
+        confianza = col2.text_input("Confianza", 0.3)
+        elevacion = col3.text_input("Elevación", 2.0)
 
 
-
+        #Aplicación del algoritmo
         Lista = DataFrameArchivo.stack().groupby(level=0).apply(list).tolist()
         ReglasC1 = apriori(Lista, 
                    min_support=float(soporte), 
                    min_confidence=float(confianza), 
                    min_lift=float(elevacion))
         ResultadoC1 = list(ReglasC1)
-        st.subheader("Reglas de asociación encontradas: " + str(len(ResultadoC1))  )
+        st.subheader("Número de reglas de asociación: " + str(len(ResultadoC1)))
 
-        j = 0
-        for i in ResultadoC1:
-            j+=1
+        j = 1
+        for item in ResultadoC1:
             st.markdown("__Regla__ " + "__"+str(j)+"__" + ":")
-            st.write(list(i[0]), "Soporte: ", round(i[1],5), ", Confianza: ", round(list(i[2][0])[2],5), ", Elevación: ", round(list(i[2][0])[3],5))
-            st.text_area("Observaciones", key=j)
+            st.write(list(item[0]), "Soporte: ", round(item[1],5), ", Confianza: ", round(list(item[2][0])[2],5), ", Elevación: ", round(list(item[2][0])[3],5))
+            #st.text_area("Análisis", key=j)
+            j+=1
