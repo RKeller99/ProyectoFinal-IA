@@ -97,39 +97,73 @@ def programa():
             #Se crean las etiquetas de los elementos en los clústeres
             st.sidebar.subheader("Número de clusters para análisis")
             nclusters = st.sidebar.text_input("Indique el número de clusters", 7)
-            MJerarquico = AgglomerativeClustering(n_clusters=int(nclusters), linkage='complete', affinity='euclidean')
-            MJerarquico.fit_predict(MEstandarizada)
-            Hipoteca = Hipoteca[selection]
-            Hipoteca['clusterH'] = MJerarquico.labels_
-            st.subheader("Matriz con clusters asignados")
-            with st.expander("Desplegar matriz con clusters asignados"):
-                columnascca = st.slider("¿Cuántas columnas de la matriz con clusters deseas observar?", min_value=1, max_value=len(MEstandarizada), value = 10)
-                MHCCA = pd.DataFrame(Hipoteca)
-                st.write(MHCCA.head(columnascca))
-            st.subheader("Número de elementos por cada cluster")
-            with st.expander("Número de elementos por cada cluster"):
-                st.write(Hipoteca.groupby(['clusterH'])['clusterH'].count())
-            st.subheader("Análisis por cluster seleccionado")
-            with st.expander("Análisis por cluster"):
-                st.sidebar.subheader("Análisis por cluster seleccionado")
-                nclusteranalysis = st.sidebar.slider("Indique el cluster que desea analizar", min_value=0, max_value=int(nclusters))
-                st.write(Hipoteca[Hipoteca.clusterH == int(nclusteranalysis)])
-            
-            
-            st.subheader("Análisis por centroides de cada cluster")
-            with st.expander("Tabla de centroides"):
-                CentroidesH = Hipoteca.groupby('clusterH').mean()
-                st.write(CentroidesH)
+            MClustering = AgglomerativeClustering(n_clusters=int(nclusters), linkage='complete', affinity='euclidean')
+            MClustering.fit_predict(MEstandarizada)
+            Hipoteca = Hipoteca[selection]            
+        
+        if tipo_clus == 'Particional':
+            #Gráfica clusters particional
+            SSE = []
+            for i in range(2, 12):
+                km = KMeans(n_clusters=i, random_state=0) #Valor aleatorio a partir de hora del sistema.
+                km.fit(MEstandarizada)                    #Estimación con respecto a matriz de datos estandarizados
+                SSE.append(km.inertia_)                   #Que nos devuelva la inercia para poder graficar
 
-            with st.expander("Análisis final de todos los clusters"):
-                st.subheader("Número de clusters: " + nclusters)
-                AnalisisClusters = CentroidesH.values.tolist()
-                for contador in range (0, int(nclusters)):
-                    st.markdown("__Cluster__ " + "__"+ str(contador) +"__" + ":")
-                    contador2 = 0
-                    for item in CentroidesH:
-                        st.write(item + ' :', AnalisisClusters[contador][contador2])
-                        contador2+=1
+            #Se grafica SSE en función de k
+            fig = plt.figure(figsize=(10, 7))
+            plt.plot(range(2, 12), SSE, marker='o')     #Se grafican valores finales de K, mediante puntos.
+            plt.xlabel('Cantidad de clusters *k*')
+            plt.ylabel('SSE')
+            plt.title('Elbow Method')
+            st.subheader("Gráfica de Método del Codo")
+            st.pyplot(fig)
+
+            # kl = KneeLocator(range(2, 12), SSE, curve="convex", direction="decreasing")
+            # kl.elbow
+            # plt.style.use('ggplot')
+            # fig = kl.plot_knee()
+            # st.subheader("Gráfica de Método del Codo")
+            # st.pyplot(fig)      
+
+            #Se crean las etiquetas de los elementos en los clústeres
+            st.sidebar.subheader("Número de clusters para análisis")
+            nclusters = st.sidebar.text_input("Indique el número de clusters", 4)
+            Hipoteca = Hipoteca[selection]
+            MClustering = KMeans(n_clusters=int(nclusters), random_state=0).fit(MEstandarizada)  #Se define el número de clusters(4)
+            MClustering.predict(MEstandarizada)
+            Hipoteca = Hipoteca[selection]           
+
+
+        Hipoteca['cluster'] = MClustering.labels_
+        st.subheader("Matriz con clusters asignados")
+        with st.expander("Desplegar matriz con clusters asignados"):
+            columnascca = st.slider("¿Cuántas columnas de la matriz con clusters deseas observar?", min_value=1, max_value=len(MEstandarizada), value = 10)
+            MHCCA = pd.DataFrame(Hipoteca)
+            st.write(MHCCA.head(columnascca))
+        st.subheader("Número de elementos por cada cluster")
+        with st.expander("Número de elementos por cada cluster"):
+            st.write(Hipoteca.groupby(['cluster'])['cluster'].count())
+        st.subheader("Análisis por cluster seleccionado")
+        with st.expander("Análisis por cluster"):
+            st.sidebar.subheader("Análisis por cluster seleccionado")
+            nclusteranalysis = st.sidebar.slider("Indique el cluster que desea analizar", min_value=0, max_value=int(nclusters))
+            st.write(Hipoteca[Hipoteca.cluster == int(nclusteranalysis)])
+        
+        
+        st.subheader("Análisis por centroides de cada cluster")
+        with st.expander("Tabla de centroides"):
+            Centroides = Hipoteca.groupby('cluster').mean()
+            st.write(Centroides)
+
+        with st.expander("Análisis final de todos los clusters"):
+            st.subheader("Número de clusters: " + nclusters)
+            AnalisisClusters = Centroides.values.tolist()
+            for contador in range (0, int(nclusters)):
+                st.markdown("__Cluster__ " + "__"+ str(contador) +"__" + ":")
+                contador2 = 0
+                for item in Centroides:
+                    st.write(item + ' :', AnalisisClusters[contador][contador2])
+                    contador2+=1      
 
 
 
