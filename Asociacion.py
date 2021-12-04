@@ -1,5 +1,3 @@
-from numpy.lib.shape_base import column_stack
-
 import streamlit as st
 
 
@@ -36,7 +34,7 @@ def programa():
         #Muestra los datos
         st.subheader("Tabla de datos")
         with st.expander("Desplegar tabla de datos"):
-            colum = st.slider("¿Cuántas columnas de datos deseas observar?", min_value=1, max_value=len(DataFrameArchivo))
+            colum = st.slider("¿Cuántas columnas de datos deseas observar?", min_value=1, max_value=len(DataFrameArchivo), value = 10)
             st.write(DataFrameArchivo.head(colum))
 
 #3. Procesamiento de Datos/Exploración de los Items

@@ -20,11 +20,7 @@ if modulo=='Reglas de asociación':
   Asociacion.programa()
 
 if modulo=='Métricas de distancia':
-    met_dist=st.sidebar.selectbox('Selecciona la métrica que deseas trabajar:',('Euclidiana','Chebyshev', 'Manhattan', 'Minkowski'))
-    # if met_dist=='Euclidiana':
-    # if met_dist=='Chebyshev':
-    # if met_dist=='Manhattan':
-    # if met_dist=='Minkowski':
+    Distancia.programa()
 
 if modulo=='Clustering':
     tipo_clus=st.sidebar.selectbox('Selecciona el algoritmo que deseas trabajar:',('Particional','Jerárquico'))
