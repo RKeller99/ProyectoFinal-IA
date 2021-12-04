@@ -23,9 +23,7 @@ if modulo=='Métricas de distancia':
     Distancia.programa()
 
 if modulo=='Clustering':
-    tipo_clus=st.sidebar.selectbox('Selecciona el algoritmo que deseas trabajar:',('Particional','Jerárquico'))
-    # if tipo_clus=='Particional':
-    # if tipo_clus=='Jerárquico':
+    Clustering.programa()
 
 #if modulo=='Clasificación':
 
