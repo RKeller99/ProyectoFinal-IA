@@ -129,8 +129,8 @@ def programa():
         st.markdown("__Matriz de clasificación__") 
         st.write(Matriz_Clasificacion)
         st.write("Exactitud", Clasificacion.score(X_validation, Y_validation)*100, " % ")
-        st.markdown("__Reporte de Clasificación__") 
-        st.write(classification_report(Y_validation, Y_Clasificacion))        
+        #st.markdown("__Reporte de Clasificación__") 
+        #st.write(classification_report(Y_validation, Y_Clasificacion))        
 
 #6.Ecuación del modelo de clasificación
         st.subheader("Ecuación del modelo de clasificación") 

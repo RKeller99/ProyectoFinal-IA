@@ -31,6 +31,4 @@ if modulo=='Regresión Logística':
     Regresion.programa()
 
 if modulo=='Árboles de Decisión':
-    tipo_arb=st.sidebar.selectbox('Selecciona el algoritmo que deseas trabajar:',('Pronóstico','Clasificación'))
-    # if tipo_arb=='Pronóstico':
-    # if tipo_arb=='Clasificación':
+    Arboles.programa()
