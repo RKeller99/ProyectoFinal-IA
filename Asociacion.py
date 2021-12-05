@@ -63,8 +63,8 @@ def programa():
 
 #4. Aplicación del algoritmo
         #Selección de parámetros
-        st.subheader("Aplicación del Algoritmo")
-        col1, col2, col3 = st.columns(3)
+        st.sidebar.subheader("Selección de Parámetros - Aplicación del Algoritmo")
+        col1, col2, col3 = st.sidebar.columns(3)
         soporte = col1.text_input("Soporte", 0.01)
         confianza = col2.text_input("Confianza", 0.3)
         elevacion = col3.text_input("Elevación", 2.0)
@@ -72,16 +72,20 @@ def programa():
 
         #Aplicación del algoritmo
         Lista = DataFrameArchivo.stack().groupby(level=0).apply(list).tolist()
-        ReglasC1 = apriori(Lista, 
-                   min_support=float(soporte), 
-                   min_confidence=float(confianza), 
-                   min_lift=float(elevacion))
+        ReglasC1 = apriori(Lista, min_support=float(soporte), min_confidence=float(confianza), min_lift=float(elevacion))
         ResultadoC1 = list(ReglasC1)
         st.subheader("Número de reglas de asociación: " + str(len(ResultadoC1)))
 
         j = 1
         for item in ResultadoC1:
+            Lista = list(item[0])
+            Objetos = "Objetos en la regla:"
             st.markdown("__Regla__ " + "__"+str(j)+"__" + ":")
-            st.write(list(item[0]), "Soporte: ", round(item[1],5), ", Confianza: ", round(list(item[2][0])[2],5), ", Elevación: ", round(list(item[2][0])[3],5))
-            #st.text_area("Análisis", key=j)
+            for i in range (0, len(Lista)):
+                if i == len(Lista)-1:
+                    Objetos += " " + str(Lista[i])
+                else:
+                    Objetos += " " + str(Lista[i] + ",")
+            st.write(Objetos)
+            st.write("Soporte: ", round(item[1],5), ", Confianza: ", round(list(item[2][0])[2],5), ", Elevación: ", round(list(item[2][0])[3],5))
             j+=1

@@ -4,6 +4,8 @@ import streamlit as st
 import Asociacion
 import Distancia
 import Clustering
+import Regresion
+import Arboles
 
 st.title("Inteligencia Artificial")
 
@@ -12,7 +14,7 @@ st.title("Inteligencia Artificial")
 
 
 st.sidebar.title('Módulos Inteligencia Artificial')
-modulo=st.sidebar.selectbox('Selecciona el módulo con el que deseas trabajar:',('Reglas de asociación','Métricas de distancia', 'Clustering', 'Clasificación', 'Árboles de Decisión'))
+modulo=st.sidebar.selectbox('Selecciona el módulo con el que deseas trabajar:',('Reglas de asociación','Métricas de distancia', 'Clustering', 'Regresión Logística', 'Árboles de Decisión'))
 #physics=st.sidebar.checkbox('add physics interactivity?')
 #got.simple_func(physics)
 
@@ -25,7 +27,8 @@ if modulo=='Métricas de distancia':
 if modulo=='Clustering':
     Clustering.programa()
 
-#if modulo=='Clasificación':
+if modulo=='Regresión Logística':
+    Regresion.programa()
 
 if modulo=='Árboles de Decisión':
     tipo_arb=st.sidebar.selectbox('Selecciona el algoritmo que deseas trabajar:',('Pronóstico','Clasificación'))
