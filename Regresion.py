@@ -1,3 +1,4 @@
+from os import sep
 import streamlit as st
 
 
@@ -140,10 +141,28 @@ def programa():
         CoeficientesMod = Clasificacion.coef_.tolist()
         Intercept = Clasificacion.intercept_.tolist()
         #st.markdown("__Ecuación del modelo de clasificación :__ ")
-        st.write(str(Intercept[0]) + " + ")
+        st.write("Prob = 1/1+𝑒^−(𝑎+𝑏𝑋))")
+        st.write("a+bX = " + str(Intercept[0]) + " + ")
         for i in range (0, top-1) :
             if float(CoeficientesMod[0][i]) < 0:
                 st.write( str(CoeficientesMod[0][i]) + "[" + str(selectionVP[i]) + "]")
             else:
                 st.write( "+" + str(CoeficientesMod[0][i]) + "[" + str(selectionVP[i]) + "]")
             
+#7. Nuevas Predicciones
+        st.subheader("Nuevas Predicciones") 
+        l = []
+        for k in range (0, len(selectionVP)) :
+            l.append(st.text_input(selectionVP[k], 0))
+        st.markdown("__Valor de la nueva predicción:__")
+        TextoPrediccion = ""
+        for k in range (0, len(selectionVP)) :
+            if k == len(selectionVP)-1: 
+                TextoPrediccion += "" + str(l[k]) +""
+            else:
+                TextoPrediccion += "" + str(l[k]) +", "
+        NuevaPrediccion = pd.DataFrame(x.split(',') for x in TextoPrediccion.split('\n'))
+        #st.write(NuevaPrediccion)
+        arr = Clasificacion.predict(NuevaPrediccion)
+        st.write(arr[0])
+        

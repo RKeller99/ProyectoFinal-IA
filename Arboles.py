@@ -172,4 +172,19 @@ def programa():
             Reporte = export_text(Arbol, feature_names = selectionVP)
             st.write(Reporte)      
 
-#7. Nuevos Pronósticos
+#7. Nuevas Predicciones
+        st.subheader("Nuevas Predicciones") 
+        l = []
+        for k in range (0, len(selectionVP)) :
+            l.append(st.text_input(selectionVP[k], 0))
+        st.markdown("__Valor de la nueva predicción:__")
+        TextoPrediccion = ""
+        for k in range (0, len(selectionVP)) :
+            if k == len(selectionVP)-1: 
+                TextoPrediccion += "" + str(l[k]) +""
+            else:
+                TextoPrediccion += "" + str(l[k]) +", "
+        NuevaPrediccion = pd.DataFrame(x.split(',') for x in TextoPrediccion.split('\n'))
+        #st.write(NuevaPrediccion)
+        arr = Arbol.predict(NuevaPrediccion)
+        st.write(arr[0])
