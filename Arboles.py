@@ -1,3 +1,4 @@
+import threading
 import streamlit as st
 
 
@@ -159,18 +160,34 @@ def programa():
 
 #6. Conformación del modelo de Pronóstico
         st.subheader("Conformación del modelo de pronóstico")
-        # st.markdown("__Árbol 1__")
-        # Elementos = export_graphviz(Arbol, feature_names = selectionVP)  
-        # Arbol1 = graphviz.Source(Elementos)
-        # st.write(Arbol1)
+        #Elementos = export_graphviz(Arbol, feature_names = selectionVP)  
+        #Arbol1 = graphviz.Source(Elementos)
         st.markdown("__Árbol de Decisión__")
         Arbol2 = plt.figure(figsize=(16,16))  
         plot_tree(Arbol, feature_names = selectionVP)
-        st.write(Arbol2)
+        st.pyplot(Arbol2)
+        plt.savefig('arbol_de_decision_' + tipo_arbol +'.png')
+        with open('arbol_de_decision_' + tipo_arbol +'.png',"rb") as file:
+            button = st.download_button("Descarga del árbol de decisión", data = file, file_name = 'arbol_de_decision_' + tipo_arbol +'.png', mime ="image/png")
+        #st.download_button("Descarga árbol de decisión", data = Arbol1.pipe(format='svg'), file_name = "arbol_de_decision.svg", mime ="image/svg")  
         st.markdown("__Esquema del Árbol de Decisión__")
         with st.expander("Desplegar esquema del árbol de decisión"):
             Reporte = export_text(Arbol, feature_names = selectionVP)
-            st.write(Reporte)      
+            Reporte = Reporte.split("\n")
+            Esquema = "########################################################\n\n"
+            Esquema += "Esquema árbol de decisión en archivo: " + archivo.name + "\n\n"
+            Esquema += "Tipo de árbol: " +  tipo_arbol + "\n\n"
+            Esquema += "Variables Predictoras:\n"
+            for elemento in selectionVP:
+                Esquema += elemento + ", "
+            Esquema += "\n\nVariable Clase:\n"
+            for elemento in selectionVC:
+                Esquema += elemento + "\n\n"
+            Esquema += "########################################################\n\n"
+            for elemento in Reporte:
+                st.text(elemento)
+                Esquema += elemento + "\n"
+        st.download_button('Descargar reporte escrito del árbol de decisión', file_name='esquema_arbol_' + tipo_arbol+ '.txt', data = Esquema)    
 
 #7. Nuevas Predicciones
         st.subheader("Nuevas Predicciones") 

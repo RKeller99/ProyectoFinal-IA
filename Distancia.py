@@ -55,6 +55,9 @@ def programa():
         with st.expander("Desplegar matriz de distancia"):
             column = st.slider("¿Cuántas columnas de la matriz deseas observar?", min_value=1, max_value=len(ME), value = 10)
             st.write(ME.head(column))
+        ##Descargar de matriz de distancia
+        MDI = ME.to_csv().encode('utf-8')
+        st.download_button('Descargar matriz de distancia', file_name='matriz_distancia_' + met_dist + '.csv', data = MDI, mime = 'text/csv')
         #Distancia entre objetos
         st.subheader("Distancia entre objetos")
         with st.expander("Desplegar opción distancia entre objetos"):

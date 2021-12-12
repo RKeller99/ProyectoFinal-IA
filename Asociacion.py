@@ -59,6 +59,9 @@ def programa():
 
         st.subheader("Generación de gráfica de frecuencia de datos")
         st.pyplot(fig)
+        plt.savefig('grafica_frecuencia_datos.png')
+        with open("grafica_frecuencia_datos.png","rb") as file:
+            button = st.download_button("Descarga de la gráfica", data = file, file_name = "grafica_frecuencia_datos.png", mime ="image/png")
 
 
 #4. Aplicación del algoritmo
@@ -77,15 +80,30 @@ def programa():
         st.subheader("Número de reglas de asociación: " + str(len(ResultadoC1)))
 
         j = 1
+        Comentarios = []
+        Descarga = "########################################################\n\n"
+        Descarga += "Reglas de Asociación en archivo: " + archivo.name + "\n\n"
+        Descarga += "Parámetros en Aplicación del algoritmo:\n"
+        Descarga += "Soporte: " + soporte + "\nConfianza: " + confianza + "\nElevación: " + elevacion + "\n\n"
+        Descarga += "########################################################\n\n"
         for item in ResultadoC1:
             Lista = list(item[0])
             Objetos = "Objetos en la regla:"
             st.markdown("__Regla__ " + "__"+str(j)+"__" + ":")
+            Descarga += "Regla " + str(j) + " :"
             for i in range (0, len(Lista)):
                 if i == len(Lista)-1:
                     Objetos += " " + str(Lista[i])
+                    Descarga += " " + str(Lista[i])
                 else:
                     Objetos += " " + str(Lista[i] + ",")
+                    Descarga += " " + str(Lista[i] + ",")
             st.write(Objetos)
             st.write("Soporte: ", round(item[1],5), ", Confianza: ", round(list(item[2][0])[2],5), ", Elevación: ", round(list(item[2][0])[3],5))
+            Descarga += "\n" + "Soporte: " + str(round(item[1],5)) + ", Confianza: " + str(round(list(item[2][0])[2],5)) + ", Elevación: " + str(round(list(item[2][0])[3],5)) + "\n"
+            Comentarios.append(st.text_area('Comentarios regla ' + str(j) + ' :', ""))
+            Descarga += "Comentarios:\n"
+            Descarga += Comentarios[j-1]
+            Descarga += "\n\n\n"
             j+=1
+        st.download_button('Descargar reglas de asociación', file_name='reglas_asociacion.txt', data = Descarga)

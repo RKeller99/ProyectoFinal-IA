@@ -135,25 +135,44 @@ def programa():
 
 #6.Ecuación del modelo de clasificación
         st.subheader("Ecuación del modelo de clasificación") 
-        # st.write("Intercepto:", Clasificacion.intercept_)
-        # st.write('Coeficientes: \n', Clasificacion.coef_)
         top = len(selectionVP)
         CoeficientesMod = Clasificacion.coef_.tolist()
         Intercept = Clasificacion.intercept_.tolist()
-        #st.markdown("__Ecuación del modelo de clasificación :__ ")
+        Ecuacion = "Prob = 1/1+𝑒^−(𝑎+𝑏𝑋))\n"
         st.write("Prob = 1/1+𝑒^−(𝑎+𝑏𝑋))")
-        st.write("a+bX = " + str(Intercept[0]) + " + ")
+        st.write("a+bX = " + str(Intercept[0]))
+        Ecuacion += "a+bX = " + str(Intercept[0]) + "\n"
         for i in range (0, top-1) :
             if float(CoeficientesMod[0][i]) < 0:
                 st.write( str(CoeficientesMod[0][i]) + "[" + str(selectionVP[i]) + "]")
+                Ecuacion += str(CoeficientesMod[0][i]) + "[" + str(selectionVP[i]) + "]\n"
             else:
                 st.write( "+" + str(CoeficientesMod[0][i]) + "[" + str(selectionVP[i]) + "]")
+                Ecuacion +=  "+" + str(CoeficientesMod[0][i]) + "[" + str(selectionVP[i]) + "]\n"
+        
+        Descarga = "########################################################\n\n"
+        Descarga += "Regresión Logística en archivo: " + archivo.name + "\n\n"
+        Descarga += "Variables Predictoras:\n"
+        for elemento in selectionVP:
+            Descarga += elemento + ", "
+        Descarga += "\n\nVariable Clase:\n"
+        for elemento in selectionVC:
+            Descarga += elemento + "\n\n"
+        Descarga += "Test Size: " + test_size_usr + "\n"
+        Descarga += "Random State: " + random_state_usr + "\n\n"
+        Descarga += "########################################################\n\n"
+        st.download_button('Descargar modelo regresión logística', file_name='modelo_regresion_logistica.txt', data = Descarga + Ecuacion)
+
+
             
 #7. Nuevas Predicciones
         st.subheader("Nuevas Predicciones") 
+        NuevaPrediccionTx = "\n########################################################\n\n"
+        NuevaPrediccionTx += "Nueva Predicción: \n\n"
         l = []
         for k in range (0, len(selectionVP)) :
             l.append(st.text_input(selectionVP[k], 0))
+            NuevaPrediccionTx += str(selectionVP[k]) + ": " + str(l[k]) + "\n"
         st.markdown("__Valor de la nueva predicción:__")
         TextoPrediccion = ""
         for k in range (0, len(selectionVP)) :
@@ -165,4 +184,7 @@ def programa():
         #st.write(NuevaPrediccion)
         arr = Clasificacion.predict(NuevaPrediccion)
         st.write(arr[0])
+        NuevaPrediccionTx += "\n7Valor de la nueva predicción: " + str(arr[0]) + "\n\n"
+        NuevaPrediccionTx += "########################################################\n\n"
+        st.download_button('Descargar nueva predicción modelo regresión logística', file_name='nueva_prediccion_regresion_logistica.txt', data = Descarga + Ecuacion + NuevaPrediccionTx)
         

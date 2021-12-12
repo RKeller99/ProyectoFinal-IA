@@ -142,7 +142,8 @@ def programa():
             st.write(MHCCA.head(columnascca))
         st.subheader("Número de elementos por cada cluster")
         with st.expander("Número de elementos por cada cluster"):
-            st.write(Hipoteca.groupby(['cluster'])['cluster'].count())
+            elementos_por_cluster = Hipoteca.groupby(['cluster'])['cluster'].count()
+            st.write(elementos_por_cluster)
         st.subheader("Análisis por cluster seleccionado")
         with st.expander("Análisis por cluster"):
             st.sidebar.subheader("Análisis por cluster seleccionado")
@@ -155,15 +156,30 @@ def programa():
             Centroides = Hipoteca.groupby('cluster').mean()
             st.write(Centroides)
 
-        with st.expander("Análisis final de todos los clusters"):
-            st.subheader("Número de clusters: " + nclusters)
-            AnalisisClusters = Centroides.values.tolist()
-            for contador in range (0, int(nclusters)):
-                st.markdown("__Cluster__ " + "__"+ str(contador) +"__" + ":")
-                contador2 = 0
-                for item in Centroides:
-                    st.write(item + ' :', AnalisisClusters[contador][contador2])
-                    contador2+=1      
+        st.subheader("Análisis final de todos los clusters")
+        st.markdown("Número de clusters: " + nclusters)
+        AnalisisClusters = Centroides.values.tolist()
+        Comentarios = []
+        Descarga = "########################################################\n\n"
+        Descarga += "Análisis clusters en archivo: " + archivo.name + "\n\n"
+        Descarga += "Algoritmo: " + "Clustering" + tipo_clus + "\n"
+        Descarga += "Método de estandarización: " + estandarizar_var + "\n\n"
+        Descarga += "########################################################\n\n"
+        for contador in range (0, int(nclusters)):
+            st.markdown("__Cluster__ " + "__"+ str(contador) +"__" + ":")
+            Descarga += "Cluster "+ str(contador) + ":\n"
+            contador2 = 0
+            st.write("Número de elementos: " + str(elementos_por_cluster[contador]))
+            Descarga += "Número de elementos: " + str(elementos_por_cluster[contador]) + "\n"
+            for item in Centroides:
+                st.write(item + ' :', AnalisisClusters[contador][contador2])
+                Descarga += item + ' :' + str(AnalisisClusters[contador][contador2]) + "\n"
+                contador2+=1
+            Comentarios.append(st.text_area('Comentarios cluster ' + str(contador) + ' :', ""))
+            Descarga += "Comentarios:\n"
+            Descarga += Comentarios[contador]
+            Descarga += "\n\n\n"
+        st.download_button('Descargar análisis de clusters', file_name='cluster_' + tipo_clus +'.txt', data = Descarga)      
 
 
 
