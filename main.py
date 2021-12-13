@@ -7,7 +7,7 @@ import Clustering
 import Regresion
 import Arboles
 
-st.set_page_config(page_title="Inteligencia Artificial")
+st.set_page_config(page_title="Inteligencia Artificial - RK")
 st.title("Inteligencia Artificial")
 st.sidebar.title('Módulos Inteligencia Artificial')
 modulo=st.sidebar.selectbox('Selecciona el módulo con el que deseas trabajar:',('Reglas de asociación','Métricas de distancia', 'Clustering', 'Regresión Logística', 'Árboles de Decisión'))

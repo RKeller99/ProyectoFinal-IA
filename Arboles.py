@@ -158,9 +158,10 @@ def programa():
             Arbol1 = graphviz.Source(Elementos)
             #st.graphviz_chart(Arbol1)
             st.markdown("__Árbol de Decisión__")
-            Arbol2 = plt.figure(figsize=(16,16))  
-            plot_tree(Arbol, feature_names = selectionVP)
-            st.pyplot(Arbol2)
+            with st.expander("Desplegar árbol de decisión"):
+                Arbol2 = plt.figure(figsize=(16,16))  
+                plot_tree(Arbol, feature_names = selectionVP)
+                st.pyplot(Arbol2)
             #plt.savefig('arbol_de_decision_' + tipo_arbol +'.png')
             #with open('arbol_de_decision_' + tipo_arbol +'.png',"rb") as file:
             #    button = st.download_button("Descarga del árbol de decisión", data = file, file_name = 'arbol_de_decision_' + tipo_arbol +'.png', mime ="image/png")
