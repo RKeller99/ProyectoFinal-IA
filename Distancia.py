@@ -1,6 +1,5 @@
 import streamlit as st
 
-
 #1. Importar bibliotecas
 import pandas as pd
 import numpy as np
@@ -9,10 +8,6 @@ from scipy.spatial.distance import cdist, minkowski
 from scipy.spatial import distance
 
 def programa():
-       
-    ##colorFondo = '#FEFBF3'
-    ##colorSecundarioFondo = "#F8F0DF"
-    ##colorPrimario = '#79B4B7'
     
     st.header("Métricas de Distancia")
     met_dist=st.sidebar.selectbox('Selecciona la métrica que deseas trabajar:',('Euclidiana','Chebyshev', 'Manhattan', 'Minkowski'))

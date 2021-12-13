@@ -27,11 +27,6 @@ from sklearn.tree import plot_tree
 from sklearn.tree import export_text
 
 def programa():
-       
-    ##colorFondo = '#FEFBF3'
-    ##colorSecundarioFondo = "#F8F0DF"
-    ##colorPrimario = '#79B4B7'
-    
     st.header("Árboles de Decisión")
     tipo_arbol = st.sidebar.selectbox('Selecciona el tipo de árbol con el que deseas trabajar:',('Pronóstico','Clasificación'))
 
@@ -109,7 +104,6 @@ def programa():
             xMuestra.columns = selectionVP
             st.write(xMuestra.head(columnasVP))
 
-
         #Variable clase
         CharacteristicsMADFVC = MADF.columns
         st.sidebar.subheader("Selección variable de clase")
@@ -122,86 +116,97 @@ def programa():
             yMuestra = pd.DataFrame(Y)
             yMuestra.columns = selectionVC
             st.write(yMuestra.head(columnasVC))
-
-        st.sidebar.subheader("Parámetros para división de datos")
-        test_size_usr = st.sidebar.text_input("Test Size", 0.2)
-        random_state_usr = st.sidebar.text_input("Random State", 1234)
-        X_train, X_validation, Y_train, Y_validation = model_selection.train_test_split(X, Y, test_size = float(test_size_usr), random_state = int(random_state_usr), shuffle = True)  
-        
-        st.sidebar.subheader("Selección de Parámetros - Aplicación del Algoritmo")
-        profundidad_max_usr = st.sidebar.text_input("Profundidad Máxima", 8)
-        min_sample_split_usr = st.sidebar.text_input("Mínimo muestras separación", 4)
-        min_sample_leaf_usr = st.sidebar.text_input("Mínimo muestras hoja", 2)
-        if tipo_arbol == 'Pronóstico':
-            Arbol = DecisionTreeRegressor(max_depth=int(profundidad_max_usr), min_samples_split=int(min_sample_split_usr), min_samples_leaf=int(min_sample_leaf_usr))
-        if tipo_arbol == 'Clasificación':
-            Arbol = DecisionTreeClassifier(max_depth=int(profundidad_max_usr), min_samples_split=int(min_sample_split_usr), min_samples_leaf=int(min_sample_leaf_usr))
-        Arbol.fit(X_train, Y_train)
-        Y_Pronostico = Arbol.predict(X_train)
+        if xMuestra.size != 0 and yMuestra.size != 0:
+            st.sidebar.subheader("Parámetros para división de datos")
+            test_size_usr = st.sidebar.text_input("Test Size", 0.2)
+            random_state_usr = st.sidebar.text_input("Random State", 1234)
+            X_train, X_validation, Y_train, Y_validation = model_selection.train_test_split(X, Y, test_size = float(test_size_usr), random_state = int(random_state_usr), shuffle = True)  
+            
+            st.sidebar.subheader("Selección de Parámetros - Aplicación del Algoritmo")
+            profundidad_max_usr = st.sidebar.text_input("Profundidad Máxima", 8)
+            min_sample_split_usr = st.sidebar.text_input("Mínimo muestras separación", 4)
+            min_sample_leaf_usr = st.sidebar.text_input("Mínimo muestras hoja", 2)
+            if tipo_arbol == 'Pronóstico':
+                Arbol = DecisionTreeRegressor(max_depth=int(profundidad_max_usr), min_samples_split=int(min_sample_split_usr), min_samples_leaf=int(min_sample_leaf_usr))
+            if tipo_arbol == 'Clasificación':
+                Arbol = DecisionTreeClassifier(max_depth=int(profundidad_max_usr), min_samples_split=int(min_sample_split_usr), min_samples_leaf=int(min_sample_leaf_usr))
+            Arbol.fit(X_train, Y_train)
+            Y_Pronostico = Arbol.predict(X_train)
 
 #5.Validación del Algoritmo
-        st.subheader("Validación del Algoritmo")
-        if tipo_arbol == 'Pronóstico':
-            st.write('Criterio: \n', Arbol.criterion)
-            st.write("MAE - Error Absoluto Medio: %.4f" % mean_absolute_error(Y_train, Y_Pronostico))
-            st.write("MSE - Error Cuadrático Medio: %.4f" % mean_squared_error(Y_train, Y_Pronostico))
-            st.write("RMSE - Raíz Cuadrada del Error Cuadrático Medio: %.4f" % mean_squared_error(Y_train, Y_Pronostico, squared=False))   #True devuelve MSE, False devuelve RMSE
-            st.write('Score: %.4f' % r2_score(Y_train, Y_Pronostico))
-        if tipo_arbol == 'Clasificación':
-            Y_Clasificacion = Arbol.predict(X_validation)
-            Matriz_Clasificacion = pd.crosstab(Y_validation.ravel(), Y_Clasificacion, rownames=['Real'], colnames=['Clasificación']) 
-            Matriz_Clasificacion
-            st.write('Criterio: \n', Arbol.criterion)
-            #st.write(classification_report(Y_validation, Y_Clasificacion))
-        st.write("Exactitud", Arbol.score(X_validation, Y_validation)*100, " % ")
-        st.markdown("__Importancia de las variables__")
-        Importancia = pd.DataFrame({'Variable': list(Archivo[selectionVP]), 'Importancia': + Arbol.feature_importances_}).sort_values('Importancia', ascending=False)         
-        st.write(Importancia)
+            st.subheader("Validación del Algoritmo")
+            if tipo_arbol == 'Pronóstico':
+                st.write('Criterio: \n', Arbol.criterion)
+                st.write("MAE - Error Absoluto Medio: %.4f" % mean_absolute_error(Y_train, Y_Pronostico))
+                st.write("MSE - Error Cuadrático Medio: %.4f" % mean_squared_error(Y_train, Y_Pronostico))
+                st.write("RMSE - Raíz Cuadrada del Error Cuadrático Medio: %.4f" % mean_squared_error(Y_train, Y_Pronostico, squared=False))   #True devuelve MSE, False devuelve RMSE
+                st.write('Score: %.4f' % r2_score(Y_train, Y_Pronostico))
+            if tipo_arbol == 'Clasificación':
+                Y_Clasificacion = Arbol.predict(X_validation)
+                Matriz_Clasificacion = pd.crosstab(Y_validation.ravel(), Y_Clasificacion, rownames=['Real'], colnames=['Clasificación']) 
+                Matriz_Clasificacion
+                st.write('Criterio: \n', Arbol.criterion)
+                #st.write(classification_report(Y_validation, Y_Clasificacion))
+            st.write("Exactitud", Arbol.score(X_validation, Y_validation)*100, " % ")
+            st.markdown("__Importancia de las variables__")
+            Importancia = pd.DataFrame({'Variable': list(Archivo[selectionVP]), 'Importancia': + Arbol.feature_importances_}).sort_values('Importancia', ascending=False)         
+            st.write(Importancia)
 
 #6. Conformación del modelo de Pronóstico
-        st.subheader("Conformación del modelo de pronóstico")
-        #Elementos = export_graphviz(Arbol, feature_names = selectionVP)  
-        #Arbol1 = graphviz.Source(Elementos)
-        st.markdown("__Árbol de Decisión__")
-        Arbol2 = plt.figure(figsize=(16,16))  
-        plot_tree(Arbol, feature_names = selectionVP)
-        st.pyplot(Arbol2)
-        plt.savefig('arbol_de_decision_' + tipo_arbol +'.png')
-        with open('arbol_de_decision_' + tipo_arbol +'.png',"rb") as file:
-            button = st.download_button("Descarga del árbol de decisión", data = file, file_name = 'arbol_de_decision_' + tipo_arbol +'.png', mime ="image/png")
-        #st.download_button("Descarga árbol de decisión", data = Arbol1.pipe(format='svg'), file_name = "arbol_de_decision.svg", mime ="image/svg")  
-        st.markdown("__Esquema del Árbol de Decisión__")
-        with st.expander("Desplegar esquema del árbol de decisión"):
-            Reporte = export_text(Arbol, feature_names = selectionVP)
-            Reporte = Reporte.split("\n")
-            Esquema = "########################################################\n\n"
-            Esquema += "Esquema árbol de decisión en archivo: " + archivo.name + "\n\n"
-            Esquema += "Tipo de árbol: " +  tipo_arbol + "\n\n"
-            Esquema += "Variables Predictoras:\n"
-            for elemento in selectionVP:
-                Esquema += elemento + ", "
-            Esquema += "\n\nVariable Clase:\n"
-            for elemento in selectionVC:
-                Esquema += elemento + "\n\n"
-            Esquema += "########################################################\n\n"
-            for elemento in Reporte:
-                st.text(elemento)
-                Esquema += elemento + "\n"
-        st.download_button('Descargar reporte escrito del árbol de decisión', file_name='esquema_arbol_' + tipo_arbol+ '.txt', data = Esquema)    
+            st.subheader("Conformación del modelo de pronóstico")
+            Elementos = export_graphviz(Arbol, feature_names = selectionVP)  
+            Arbol1 = graphviz.Source(Elementos)
+            #st.graphviz_chart(Arbol1)
+            st.markdown("__Árbol de Decisión__")
+            Arbol2 = plt.figure(figsize=(16,16))  
+            plot_tree(Arbol, feature_names = selectionVP)
+            st.pyplot(Arbol2)
+            #plt.savefig('arbol_de_decision_' + tipo_arbol +'.png')
+            #with open('arbol_de_decision_' + tipo_arbol +'.png',"rb") as file:
+            #    button = st.download_button("Descarga del árbol de decisión", data = file, file_name = 'arbol_de_decision_' + tipo_arbol +'.png', mime ="image/png")
+            st.download_button("Descarga del árbol de decisión", data = Arbol1.pipe(format='png'), file_name = 'arbol_de_decision_' + tipo_arbol +'.png', mime ="image/png")  
+            st.markdown("__Esquema del Árbol de Decisión__")
+            Esquema = ""
+            with st.expander("Desplegar esquema del árbol de decisión"):
+                Reporte = export_text(Arbol, feature_names = selectionVP)
+                Reporte = Reporte.split("\n")
+                Impresion = "########################################################\n\n"
+                Impresion += "Esquema árbol de decisión en archivo: " + archivo.name + "\n\n"
+                Impresion += "Tipo de árbol: " +  tipo_arbol + "\n\n"
+                Impresion += "Variables Predictoras:\n"
+                for elemento in selectionVP:
+                    Impresion += elemento + ", "
+                Impresion += "\n\nVariable Clase:\n"
+                for elemento in selectionVC:
+                    Impresion += elemento + "\n\n"
+                Impresion += "Exactitud: " + str(Arbol.score(X_validation, Y_validation)*100) + " %\n\n"
+                Impresion += "Importancia de las variables:\n"
+                for i in Importancia.index: 
+                    Impresion += str(Importancia['Variable'][i]) + ": " + str(Importancia['Importancia'][i]*100)+ "%" + "\n"
+                Impresion += "\n########################################################\n\n"
+                for elemento in Reporte:
+                    st.text(elemento)
+                    Esquema += elemento + "\n"
+            st.download_button('Descargar reporte escrito del árbol de decisión', file_name='esquema_arbol_' + tipo_arbol+ '.txt', data = Impresion + Esquema)    
 
 #7. Nuevas Predicciones
-        st.subheader("Nuevas Predicciones") 
-        l = []
-        for k in range (0, len(selectionVP)) :
-            l.append(st.text_input(selectionVP[k], 0))
-        st.markdown("__Valor de la nueva predicción:__")
-        TextoPrediccion = ""
-        for k in range (0, len(selectionVP)) :
-            if k == len(selectionVP)-1: 
-                TextoPrediccion += "" + str(l[k]) +""
-            else:
-                TextoPrediccion += "" + str(l[k]) +", "
-        NuevaPrediccion = pd.DataFrame(x.split(',') for x in TextoPrediccion.split('\n'))
-        #st.write(NuevaPrediccion)
-        arr = Arbol.predict(NuevaPrediccion)
-        st.write(arr[0])
+            st.subheader("Nuevas Predicciones")
+            NuevaPrediccionTx = "\n########################################################\n\n"
+            NuevaPrediccionTx += "Nueva Predicción: \n\n" 
+            l = []
+            for k in range (0, len(selectionVP)) :
+                l.append(st.text_input(selectionVP[k], 0))
+                NuevaPrediccionTx += str(selectionVP[k]) + ": " + str(l[k]) + "\n"
+            st.markdown("__Valor de la nueva predicción:__")
+            TextoPrediccion = ""
+            for k in range (0, len(selectionVP)) :
+                if k == len(selectionVP)-1: 
+                    TextoPrediccion += "" + str(l[k]) +""
+                else:
+                    TextoPrediccion += "" + str(l[k]) +", "
+            NuevaPrediccion = pd.DataFrame(x.split(',') for x in TextoPrediccion.split('\n'))
+            arr = Arbol.predict(NuevaPrediccion)
+            st.write(arr[0])
+            NuevaPrediccionTx += "\nValor de la nueva predicción: " + str(arr[0]) + "\n\n"
+            NuevaPrediccionTx += "########################################################\n\n"
+            st.download_button('Descargar nueva predicción árbol de decisión', file_name='nueva_prediccion_arbol_decision.txt', data = Impresion + NuevaPrediccionTx)

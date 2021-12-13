@@ -1,22 +1,13 @@
 import streamlit as st
 
-
 #1. Importar bibliotecas
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from apyori import apriori
 
-
-
-def programa():
-       
-    ##colorFondo = '#FEFBF3'
-    ##colorSecundarioFondo = "#F8F0DF"
-    ##colorPrimario = '#79B4B7'
-    
+def programa():       
     st.header("Reglas de Asociación")
-
 
 #2. Importar los datos desde un archivo .xlsx o .csv
     archivo = st.file_uploader("Seleccione el archivo", type = ['xlsx','csv'])
@@ -52,10 +43,8 @@ def programa():
         fig = plt.figure(figsize=(16,16), dpi = 300)
         plt.ylabel('Item')
         plt.xlabel('Frecuencia')
-        #fig.patch.set_facecolor(colorFondo)
         ax = plt.axes()
-        #ax.set(facecolor = colorSecundarioFondo)
-        plt.barh(Lista['Item'], width=Lista['Frecuencia']) #, color=colorPrimario
+        plt.barh(Lista['Item'], width=Lista['Frecuencia'])
 
         st.subheader("Generación de gráfica de frecuencia de datos")
         st.pyplot(fig)
